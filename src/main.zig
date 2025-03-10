@@ -266,13 +266,13 @@ fn cmdSetLevels(
     }
 }
 
-var debug_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
 
 pub fn main() !void {
     const gpa, const is_debug = gpa: {
         break :gpa switch (builtin.mode) {
             .Debug, .ReleaseSafe => .{ debug_allocator.allocator(), true },
-            .ReleaseFast, .ReleaseSmall => .{ std.heap.c_allocator, false }, // TODO: zig>=0.14 std.heap.smp_allocator
+            .ReleaseFast, .ReleaseSmall => .{ std.heap.smp_allocator, false },
         };
     };
 
