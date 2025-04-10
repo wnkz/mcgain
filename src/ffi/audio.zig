@@ -150,7 +150,7 @@ fn setPropertyData(
         data,
     );
 
-    std.log.debug("c.AudioObjectSetPropertyData: id={d}, address={any}, size={d}, data={any}", .{ object_id, address, size, data });
+    // std.log.debug("c.AudioObjectSetPropertyData: id={d}, address={any}, size={d}, data={any}", .{ object_id, address, size, data });
 
     if (status != c.noErr) {
         return error.FailedToSetPropertyData;
@@ -172,7 +172,7 @@ fn getPropertyData(
         data,
     );
 
-    std.log.debug("c.AudioObjectGetPropertyData: id={d}, address={any}, size={d}, data={any}", .{ object_id, address, size.*, data });
+    // std.log.debug("c.AudioObjectGetPropertyData: id={d}, address={any}, size={d}, data={any}", .{ object_id, address, size.*, data });
 
     if (status != c.noErr) {
         return error.FailedToGetPropertyData;
@@ -192,7 +192,7 @@ fn getPropertyDataSize(
         size,
     );
 
-    std.log.debug("c.AudioObjectGetPropertyDataSize: id={d}, address={any}, size={d}", .{ object_id, address, size.* });
+    // std.log.debug("c.AudioObjectGetPropertyDataSize: id={d}, address={any}, size={d}", .{ object_id, address, size.* });
 
     if (status != c.noErr) {
         return error.FailedToGetPropertyDataSize;
