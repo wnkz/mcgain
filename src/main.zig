@@ -169,6 +169,7 @@ fn cmdSetLevels(
         \\
         \\  -n, --name       Search by device name
         \\  -d, --dB         Set volume in dB instead of scalar
+        \\  -c, --channel    Channel ID e.g. 0, 1, 2, ... (do not specifiy for all channels)
         \\  -h, --help       Print command-specific usage
         \\
     ;
@@ -176,6 +177,7 @@ fn cmdSetLevels(
     var eoo: bool = false;
     var search_by_name: bool = false;
     var use_decibels: bool = false;
+    var opt_channel: ?[]const u8 = null;
     var arg_device: ?[]const u8 = null;
     var arg_scope: ?[]const u8 = null;
     var arg_value: ?[]const u8 = null;
@@ -192,6 +194,11 @@ fn cmdSetLevels(
                 search_by_name = true;
             } else if (mem.eql(u8, arg, "-d") or mem.eql(u8, arg, "--dB")) {
                 use_decibels = true;
+            } else if (mem.eql(u8, arg, "-c") or mem.eql(u8, arg, "--channel")) {
+                if (i + 1 >= args.len) fatal("expected argument after '{s}'", .{arg});
+                i += 1;
+                opt_channel = args[i];
+                continue;
             } else if (mem.eql(u8, arg, "-h") or mem.eql(u8, arg, "--help")) {
                 const stdout = io.getStdOut().writer();
                 try stdout.writeAll(cmd_usage);
@@ -233,6 +240,13 @@ fn cmdSetLevels(
         };
     };
 
+    var channel_id: ?u32 = null;
+    if (opt_channel) |channel| {
+        channel_id = std.fmt.parseInt(u32, channel, 10) catch {
+            fatal("invalid channel ID: {s}", .{channel});
+        };
+    }
+
     const selector = switch (use_decibels) {
         true => AudioDeviceChannel.VolumeSelector.decibels,
         false => AudioDeviceChannel.VolumeSelector.scalar,
@@ -248,7 +262,7 @@ fn cmdSetLevels(
                     value,
                     scope,
                     selector,
-                    null,
+                    channel_id,
                 );
             }
         }
@@ -261,7 +275,7 @@ fn cmdSetLevels(
             value,
             scope,
             selector,
-            null,
+            channel_id,
         );
     }
 }

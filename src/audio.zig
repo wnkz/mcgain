@@ -126,7 +126,11 @@ pub const AudioDevice = struct {
         channel_id: ?u32,
     ) !void {
         if (channel_id) |id| {
-            try self.channels[@intFromEnum(dtype)].get(id).?.setVolume(selector, volume);
+            if (self.channels[@intFromEnum(dtype)].get(id)) |channel| {
+                try channel.setVolume(selector, volume);
+            } else {
+                return error.BadChannel;
+            }
         } else {
             var iter = self.channels[@intFromEnum(dtype)].iterator();
             while (iter.next()) |entry| {
